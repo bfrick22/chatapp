@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Chat App Login</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/0.9.16/socket.io.min.js"></script>
+    <script src="/static/main.js"></script>
+
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
+</head>
+<body>
+    <div class="container" style="padding-top: 50px">
+        <div class="row">
+            <div class="col-xs-12 col-md-8">
+                <h3 class="text-center">Bruce Frick's Chat Application</h3>
+                <div class="login-panel panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Choose or create a room and alias</h3>
+                    </div>
+                    <div class="panel-body">
+                        <form role="form" id="frm-login">
+                            <fieldset>
+                                <div class="form-group">
+                                    <input class="form-control" placeholder="Enter Alias" name="alias" id="alias" type="text" autofocus required="">
+                                </div>
+                                <div class="form-group">
+                                    <input class="form-control" placeholder="Enter Room Name" name="roomname" id="roomname" type="text" autofocus required="">
+                                </div>
+                                <button type="submit" class="btn btn-lg btn-success btn-block">Enter Chat</button>
+                            </fieldset>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+    var namespace = "/chatapp";
+    var socket = io.connect('http://' + document.domain + ':' + location.port + namespace);
+
+    socket.on('connect', function() {
+        socket.emit("rooms", {});
+    });
+
+    socket.on("rooms", function (message) {
+        listRooms(message["rooms"]);
+    });
+
+    $(function(){
+
+        if (getCookie("chatapp-alias") && getCookie("chatapp-room")) {
+
+            window.location = "/";
+
+        } else {
+
+            $("#alias").val(getCookie("chatapp-alias"));
+
+            $("#frm-login").submit(function(event) {
+
+                event.preventDefault();
+
+                if ($("#nickname").val() !== '') {
+                    setCookie("chatapp-alias", $("#alias").val());
+                    setCookie("chatapp-room", $("#roomname").val());
+                    window.location = "/";
+                }
+
+            });
+        }
+    })
+</script>
+
+</body>
+</html>
